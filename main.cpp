@@ -18,7 +18,7 @@ public:
     Block()
     {
         setSize(sf::Vector2f(size, size));
-        setFillColor(sf::Color::Black);
+        set_value(empty);
     }
     void set_pos(int x, int y)
     {
@@ -29,7 +29,7 @@ public:
     void set_value(values value)
     {
         this->value = value;
-        switch (value)
+        switch(value)
         {
         case empty:
             setFillColor(sf::Color::Black);
@@ -55,86 +55,86 @@ int main()
 {
     const int X = 20, Y = 20;
     int width = 1000, height = 1000;
-    if (height < width)
+    if(height < width)
         Block::set_size(height / Y);
     else
         Block::set_size(width / X);
 
     std::array<std::array<Block, X>, Y> map;
-    for (int y = 0; y < Y; y++)
-        for (int x = 0; x < X; x++)
+    for(int y = 0; y < Y; y++)
+        for(int x = 0; x < X; x++)
             map[y][x].set_pos(x, y);
 
     map[1][1].set_value(Block::values::fruit);
     std::list<Block *> cells;
-    for (int i = 7; i > 3; i--)
+    for(int i = 7; i > 3; i--)
         cells.push_back(&map[Y / 2][i]);
-    for (auto &cell : cells)
+    for(auto &cell : cells)
         cell->set_value(Block::values::snake);
 
     sf::Keyboard::Key direction = sf::Keyboard::Right;
 
     sf::RenderWindow window(sf::VideoMode(width, height), "window");
     sf::Clock clock;
-    while (window.isOpen())
+    while(window.isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event))
+        while(window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if(event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::Resized)
+            else if(event.type == sf::Event::Resized)
             {
                 width = window.getSize().x;
                 height = window.getSize().y;
             }
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && direction != sf::Keyboard::Left)
+        if(sf::Keyboard::isKeyPressed(sf::Keyboard::Right) && direction != sf::Keyboard::Left)
             direction = sf::Keyboard::Right;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && direction != sf::Keyboard::Right)
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Left) && direction != sf::Keyboard::Right)
             direction = sf::Keyboard::Left;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && direction != sf::Keyboard::Down)
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && direction != sf::Keyboard::Down)
             direction = sf::Keyboard::Up;
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && direction != sf::Keyboard::Up)
+        else if(sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && direction != sf::Keyboard::Up)
             direction = sf::Keyboard::Down;
 
         if (clock.getElapsedTime() > sf::milliseconds(250))
         {
             Block *front = cells.front(), *next;
-            switch (direction)
+            switch(direction)
             {
             case sf::Keyboard::Right:
                 next = &map[front->Y()][front->X() + 1];
-                if (front->X() == X - 1 || next->Value() == Block::values::snake)
+                if(front->X() == X - 1 || next->Value() == Block::values::snake)
                     return 100;
                 cells.push_front(next);
                 break;
             case sf::Keyboard::Left:
                 next = &map[front->Y()][front->X() - 1];
-                if (front->X() == 0 || next->Value() == Block::values::snake)
+                if(front->X() == 0 || next->Value() == Block::values::snake)
                     return 100;
                 cells.push_front(next);
                 break;
             case sf::Keyboard::Up:
                 next = &map[front->Y() - 1][front->X()];
-                if (front->Y() == 0 || next->Value() == Block::values::snake)
+                if(front->Y() == 0 || next->Value() == Block::values::snake)
                     return 100;
                 cells.push_front(next);
                 break;
             case sf::Keyboard::Down:
                 next = &map[front->Y() + 1][front->X()];
-                if (front->Y() == Y - 1 || next->Value() == Block::values::snake)
+                if(front->Y() == Y - 1 || next->Value() == Block::values::snake)
                     return 100;
                 cells.push_front(next);
                 break;
             }
-            if (next->Value() == Block::values::fruit)
+            if(next->Value() == Block::values::fruit)
             {
                 std::vector<Block *> free;
-                for (auto &y : map)
-                    for (auto &block : y)
-                        if (block.Value() == Block::values::empty)
+                for(auto &y : map)
+                    for(auto &block : y)
+                        if(block.Value() == Block::values::empty)
                             free.push_back(&block);
                 free[rand() % free.size()]->set_value(Block::values::fruit);
             }
@@ -147,10 +147,9 @@ int main()
 
             clock.restart();
         }
-
-        window.clear(sf::Color(100, 100, 100)); // gray
-        for (auto &y : map)
-            for (auto &block : y)
+        
+        for(auto &y : map)
+            for(auto &block : y)
                 window.draw(block);
         window.display();
     }
